@@ -1,0 +1,355 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{basicstyle=\ttfamily\small, breaklines=true, columns=fullflexible,
+        keywordstyle=\color{blue}, commentstyle=\color{gray}, language=Python}
+
+\newtcolorbox{keybox}[1]{colback=blue!5!white,colframe=blue!60!black,title=#1}
+\newtcolorbox{warnbox}[1]{colback=red!5!white,colframe=red!60!black,title=#1}
+
+\title{The Normalizing-Flow $f_0$ Method (Test 10):\\ A Step-by-Step Guide}
+\author{\texttt{fit\_h\_flow\_f0\_joint\_mle} in \texttt{fitter.py}}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{keybox}{The idea in one sentence}
+We do not know the initial distribution function $f_0(z_0,w_0)$ of the stars, so we
+model it with a \emph{normalizing flow} (a flexible, trainable probability density),
+and we fit this flow \emph{jointly} with the dark-matter scale height $h$ by maximizing
+the likelihood of the observed snapshot, where the two are connected through
+back-integration of the orbits and Liouville's theorem.
+\end{keybox}
+
+\tableofcontents
+
+%======================================================================
+\section{Setup: what we have and what we want}
+
+\textbf{What we observe.} A snapshot of $N$ stars at time $t_{\rm obs}$:
+positions and vertical velocities
+\[
+\{(z_i, w_i)\}_{i=1}^{N}, \qquad z \text{ in pc},\quad w \text{ in km/s}.
+\]
+
+\textbf{What we want.} The dark-matter scale height $h$, which enters the vertical
+potential through
+\[
+\Phi_{\rm DM}(z) \;=\; 4\pi G \rho_{\rm DM}\, h^2 \,\ln\cosh\!\left(\frac{z}{h}\right),
+\]
+added to the fixed baryonic (thin disk, thick disk, gas) $\mathrm{sech}^2$ components.
+
+\textbf{The catch.} The likelihood of the data depends on the potential \emph{and} on
+the (unknown) initial distribution function $f_0$ at $t=0$. In earlier tests $f_0$ was
+assumed to be a Gaussian with fixed (possibly wrong) parameters. Test~10 asks: what if
+we instead let $f_0$ be a completely flexible learned density --- a normalizing flow?
+
+%======================================================================
+\section{Step 1: The physics link --- Liouville's theorem}
+
+Stars move in phase space $(z,w)$ under Hamilton's equations,
+\[
+\dot z = w, \qquad \dot w = -\frac{\partial \Phi(z,t)}{\partial z}.
+\]
+The collisionless Boltzmann equation says $f$ is \emph{constant along orbits}:
+\[
+\frac{df}{dt}=0
+\quad\Longrightarrow\quad
+f_{\rm obs}(z,w) \;=\; f_0\bigl(z_0(z,w),\, w_0(z,w)\bigr),
+\]
+where $(z_0, w_0)$ is the point you land on if you take the observed star at
+$(z,w)$ and integrate its orbit \textbf{backwards} from $t_{\rm obs}$ to $t=0$
+through the trial potential.
+
+\begin{keybox}{Why there is no Jacobian from the dynamics}
+In general, when you transform a density through a map you must multiply by the
+Jacobian determinant of the map. Here the back-integration map
+$(z,w)\mapsto(z_0,w_0)$ is a \emph{Hamiltonian (symplectic)} map, and the code
+implements it with a leapfrog integrator, which is symplectic too. Symplectic maps
+preserve phase-space volume exactly:
+\[
+\left|\det \frac{\partial(z_0,w_0)}{\partial(z,w)}\right| \;=\; 1 .
+\]
+Therefore the density of an observed star is \emph{literally} $f_0$ evaluated at its
+back-integrated point --- no correction factor. This is why the loss below is so simple.
+\end{keybox}
+
+So the log-likelihood of the snapshot, given a potential (parametrized by $h$, plus an
+optional neural-network correction $\delta\Phi$) and given $f_0$, is
+\begin{equation}
+\log \mathcal{L}
+= \sum_{i=1}^{N} \log f_0\Bigl( z_0(z_i,w_i;\, h,\delta\Phi),\;
+                                 w_0(z_i,w_i;\, h,\delta\Phi) \Bigr).
+\label{eq:loglike}
+\end{equation}
+Everything that follows is about (a) how $f_0$ is represented by a flow, and
+(b) how \eqref{eq:loglike} is maximized over the flow \emph{and} $h$ at the same time.
+
+%======================================================================
+\section{Step 2: What a normalizing flow is}
+
+A normalizing flow represents an arbitrary density by \textbf{deforming a simple one}.
+Take a base random variable $\bm u \in \mathbb{R}^2$ with a standard normal density
+\[
+p_{\rm base}(\bm u) = \frac{1}{2\pi} \exp\!\left(-\tfrac12 \|\bm u\|^2\right),
+\]
+and an \emph{invertible, differentiable} map $T$ (the ``bijection'') from base space to
+data space, $\bm x = T(\bm u)$. The classical change-of-variables formula gives the
+density of $\bm x$:
+\begin{equation}
+\log p(\bm x)
+= \log p_{\rm base}\bigl(T^{-1}(\bm x)\bigr)
++ \log \left| \det \frac{\partial\, T^{-1}(\bm x)}{\partial \bm x} \right| .
+\label{eq:cov}
+\end{equation}
+Read it as: push the data point back to base space, score it under the Gaussian, and
+add the log-Jacobian that accounts for how the map stretches or compresses volume.
+
+Two requirements drive the whole architecture:
+\begin{enumerate}[label=(\roman*)]
+  \item $T^{-1}$ must be cheap to evaluate (we need it for every star, every epoch);
+  \item the Jacobian determinant must be cheap (a general $2\times2$ determinant is
+        cheap anyway, but the design below makes it \emph{trivial} and generalizes to
+        any dimension).
+\end{enumerate}
+
+%======================================================================
+\section{Step 3: The bijection --- RealNVP affine coupling layers}
+
+The map $T$ is a stack of $K$ \emph{affine coupling layers}
+(class \texttt{\_AffineCoupling}), each acting on the 2-D point. One layer works
+like this:
+
+\begin{enumerate}[label=\textbf{3.\arabic*}]
+\item \textbf{Split.} Write the point as $(a, b)$: coordinate $a$ is the
+      \emph{pass-through}, coordinate $b$ is the one being \emph{transformed}.
+      A flag \texttt{flip} alternates the roles between layers (even layers transform
+      $w$, odd layers transform $z$), so over the stack both coordinates get moved.
+
+\item \textbf{Condition.} A small MLP takes the pass-through coordinate $a$ and
+      outputs two numbers: a log-scale $s(a)$ and a shift $t(a)$:
+      \[
+      \text{MLP: } 1 \to 64 \to 64 \to 2, \quad \tanh \text{ activations.}
+      \]
+      The log-scale is soft-bounded, $s = 3\tanh(\hat s/3)$, so no single layer can
+      stretch by more than $e^{\pm 3}\approx 20\times$ --- a numerical-stability guard.
+
+\item \textbf{Affine transform.} Only $b$ changes:
+      \begin{align}
+      \text{forward (data $\to$ base, used in \texttt{log\_prob}):}\quad
+          & u = \bigl(b - t(a)\bigr)\, e^{-s(a)}, \qquad a \mapsto a, \\[2pt]
+      \text{inverse (base $\to$ data, used for sampling):}\quad
+          & b = u\, e^{s(a)} + t(a), \qquad\quad\; a \mapsto a.
+      \end{align}
+\end{enumerate}
+
+\begin{keybox}{Why this is invertible even though it contains a neural network}
+You never need to invert the MLP. Given the output, the pass-through coordinate $a$
+is right there unchanged, so you can recompute exactly the same $s(a)$ and $t(a)$ and
+undo the affine map in closed form. The network only \emph{parametrizes} the affine
+map; the map itself is trivially invertible.
+\end{keybox}
+
+\textbf{Identity initialization.} The last linear layer of each MLP is initialized to
+zeros, so at the start $s=t=0$ and every coupling layer is the identity. The flow
+therefore \emph{begins} as an exact standard Gaussian and gradually deforms it during
+training. (This mirrors the zero-init convention used elsewhere in \texttt{fitter.py}
+--- and recall the ``dead-init'' bug: here only the \emph{last} layer is zero, the
+hidden weights are random, so gradients do flow.)
+
+\textbf{Standardization.} Before entering the stack, physical coordinates are
+whitened with a \emph{fixed} (non-trained) affine map,
+\[
+\bm x = \left(\frac{z-\mu_z}{\sigma_z},\; \frac{w-\mu_w}{\sigma_w}\right),
+\]
+where $\mu,\sigma$ are the mean/std of the cloud back-integrated once at the initial
+guess $h_{\rm init}$. This just puts the data at order unity for the network.
+
+%======================================================================
+\section{Step 4: The Jacobian --- why it costs nothing}
+
+Take one coupling layer in the forward direction, mapping $(a,b) \to (a,u)$.
+Its Jacobian matrix is
+\[
+\frac{\partial(a,u)}{\partial(a,b)} =
+\begin{pmatrix}
+1 & 0 \\[4pt]
+\dfrac{\partial u}{\partial a} & e^{-s(a)}
+\end{pmatrix}.
+\]
+The matrix is \textbf{triangular}: $u$ depends on both inputs, but $a$ depends only on
+itself. The determinant of a triangular matrix is the product of its diagonal, so the
+messy off-diagonal term (which involves derivatives of the neural network!) is
+irrelevant:
+\begin{equation}
+\boxed{\;\log\left|\det \frac{\partial(a,u)}{\partial(a,b)}\right| = -\,s(a)\;}
+\end{equation}
+That single number per layer is exactly what \texttt{forward} returns alongside the
+transformed point. For the stack of $K$ layers, log-determinants simply add:
+\[
+\log|\det J_{\rm total}| = \sum_{k=1}^{K} \bigl(-s_k\bigr)
+\;\;-\;\; \log(\sigma_z \sigma_w),
+\]
+where the last term is the (constant) Jacobian of the whitening step --- it converts
+the density back to \emph{physical units}, per $\mathrm{pc}\cdot\mathrm{km/s}$, so it
+is directly comparable to a physical $f_0$.
+
+Putting Steps 2--4 together, \texttt{ZWNormalizingFlow.log\_prob} computes:
+\begin{equation}
+\log f_0^{\rm flow}(z_0,w_0)
+= \underbrace{-\tfrac12\|\bm u\|^2 - \log 2\pi}_{\text{Gaussian base}}
+\;+\; \underbrace{\sum_{k=1}^{K} (-s_k)}_{\text{coupling Jacobians}}
+\;-\; \underbrace{\log(\sigma_z\sigma_w)}_{\text{whitening}} .
+\label{eq:flowlogprob}
+\end{equation}
+
+%======================================================================
+\section{Step 5: The flow \emph{as} $f_0$ --- assembling the loss}
+
+Here is the conceptual switch of Test 9/10 relative to Test 4:
+
+\begin{center}
+\begin{tabular}{l|l|l}
+ & \textbf{Test 4} & \textbf{Tests 9/10} \\ \hline
+flow models\dots & the \emph{observed} snapshot $f_{\rm obs}$ & the \emph{initial} DF $f_0$ \\
+$f_0$ is\dots & known (double Gaussian) & unknown, learned \\
+fit matches\dots & flow$(z,w)$ to $f_0(z_0,w_0)$ & data to flow via \eqref{eq:loglike} \\
+\end{tabular}
+\end{center}
+
+Substituting the flow \eqref{eq:flowlogprob} into the Liouville likelihood
+\eqref{eq:loglike}, the training loss for one epoch is
+\begin{equation}
+\mathcal{L}(\theta_{\rm flow},\, h,\, \theta_{\rm NN}, A_{\rm NN})
+= -\frac{1}{|B|}\sum_{i\in B}
+   \log f_0^{\rm flow}\Bigl(
+      z_0\bigl(z_i,w_i;\, h, A_{\rm NN}\,\delta\Phi_{\theta_{\rm NN}}\bigr),\;
+      w_0\bigl(\cdots\bigr)
+   \Bigr),
+\label{eq:loss}
+\end{equation}
+where $B$ is a random mini-batch of 500 stars. Note carefully what depends on what:
+\begin{itemize}
+\item $h$ (and the optional NN potential) sit \emph{inside the arguments}: they change
+      \emph{where} each star lands after back-integration;
+\item the flow parameters $\theta_{\rm flow}$ change \emph{how probable} any landing
+      point is.
+\end{itemize}
+The back-integration \texttt{torch\_back\_integrate} is written entirely in PyTorch
+(1000 leapfrog steps), so automatic differentiation propagates gradients \emph{through
+the whole orbit} into $h$: the optimizer literally feels ``if $h$ were slightly
+larger, star $i$ would land at a slightly different $(z_0,w_0)$, where the flow
+assigns a different probability.''
+
+\textbf{The optional NN potential.} When enabled, a time-dependent correction
+$A_{\rm NN}\,\delta\Phi(z,t)$ is added to the force during back-integration. Its
+amplitude is hard-capped by projection so that its peak never exceeds 10\% of the
+static potential's peak (the \texttt{nn\_frac\_bound} cap): after every optimizer step,
+the peak of $|A_{\rm NN}\delta\Phi|$ on a $(z,t)$ grid is measured and $A_{\rm NN}$ is
+rescaled down if it exceeds the budget.
+
+%======================================================================
+\section{Step 6: Joint minimization --- one optimizer, four parameter groups}
+
+A single Adam optimizer updates everything simultaneously, with per-group learning
+rates tuned to each parameter's natural scale:
+
+\begin{center}
+\begin{tabular}{l l l}
+\textbf{parameters} & \textbf{lr} & \textbf{role} \\ \hline
+flow weights $\theta_{\rm flow}$ & $10^{-3}$ & reshape $f_0$ \\
+$h$ (a single scalar \texttt{nn.Parameter}) & $2.0$ & move the potential \\
+NN potential weights $\theta_{\rm NN}$ & $10^{-2}$ & shape of $\delta\Phi(z,t)$ \\
+amplitude $A_{\rm NN}$ & $5\times10^{-2}$ & size of $\delta\Phi$ \\
+\end{tabular}
+\end{center}
+
+One epoch (of 200) does:
+\begin{enumerate}[label=\arabic*.]
+\item draw a random subsample of 500 observed stars;
+\item back-integrate them $t_{\rm obs}\!\to\!0$ with the \emph{current} $h$ and
+      $\delta\Phi$ (differentiable leapfrog);
+\item evaluate the loss \eqref{eq:loss} with the \emph{current} flow;
+\item backpropagate; clip the gradient on $h$ (norm 50) and on the NN (norm 1);
+\item Adam step on all groups at once;
+\item clamp $h$ into its bounds and project $A_{\rm NN}$ onto the 10\% cap.
+\end{enumerate}
+
+So the flow is chasing whatever cloud the current $h$ produces, while $h$ is
+simultaneously being pulled toward whatever makes the cloud most probable under the
+current flow.
+
+%======================================================================
+\section{Step 7: Why this fails --- the Liouville degeneracy (the point of Test 10)}
+
+\begin{warnbox}{The trap}
+The same Liouville theorem that makes the loss elegant makes it \emph{flat in $h$}.
+For (almost) \emph{any} trial $h$, the back-integration produces \emph{some} smooth
+cloud at $t=0$ --- and a sufficiently flexible flow can fit \emph{that} cloud just as
+well as any other. Wrong-$h$ clouds are just as ``fittable'' as the right one. The
+likelihood then barely prefers the true $h$, and nothing anchors it except the flow's
+\emph{limited capacity}.
+\end{warnbox}
+
+Formally: if $\Psi_h$ denotes the back-map at scale height $h$, then for any $h$ the
+choice $f_0 = f_{\rm obs}\circ \Psi_h^{-1}$ (the pushforward of the data) achieves the
+same maximal likelihood. A rigid parametric $f_0$ (a Gaussian) cannot follow this
+family, so it \emph{breaks} the degeneracy --- that is where the constraint on $h$
+actually comes from.
+
+Test 10 measures this directly with the \textbf{init-spread}
+$|h(\text{init }180) - h(\text{init }350)|$: run the same fit from two starting
+guesses; if the likelihood really pins $h$, both must converge to the same value.
+The pre-run results (N = data size, flow size = couplings $\times$ hidden):
+
+\begin{center}
+\begin{tabular}{l c c}
+\textbf{model of $f_0$} & \textbf{init-spread, $N{=}2000$} & \textbf{init-spread, $N{=}500$} \\ \hline
+rigid Gaussian (even with wrong $\sigma_w$) & $\sim 1$ pc & $\sim 1$ pc \\
+small flow ($8\times64$) & $\sim 3$ pc & $\sim 12$ pc \\
+big flow ($16\times128$) & $\sim 8$ pc & $\sim 23$ pc \\
+\end{tabular}
+\end{center}
+
+More flexibility or less data $\Rightarrow$ weaker constraint, exactly as the
+degeneracy argument predicts. And the NN potential does not rescue the rigid-but-biased
+Gaussian either: from one init it stays idle, from the other it \emph{destabilizes}
+$h$ (246 $\to$ 297).
+
+\begin{keybox}{Takeaway}
+The information about $h$ in a snapshot-likelihood fit comes from \emph{restricting}
+$f_0$, not from the data alone. Relaxing $f_0$ into a flow destroys the constraint,
+and adding potential flexibility (the NN) cannot rebuild it. This dead-end is what
+motivates changing the \emph{objective}: instead of a snapshot likelihood, use a
+statistic that directly targets the non-equilibrium term, e.g.\ a collisionless-Boltzmann
+residual $\partial f/\partial t$.
+\end{keybox}
+
+%======================================================================
+\appendix
+\section{Appendix: mapping the math to the code}
+
+\begin{center}
+\begin{tabular}{l l}
+\textbf{math object} & \textbf{code (\texttt{fitter.py})} \\ \hline
+coupling bijection, $\pm s$ log-det & \texttt{\_AffineCoupling.forward / .inverse} \\
+soft bound $s = 3\tanh(\hat s /3)$ & \texttt{\_scale\_shift} \\
+change of variables \eqref{eq:flowlogprob} & \texttt{ZWNormalizingFlow.log\_prob} \\
+whitening $\mu,\sigma$ & \texttt{set\_standardization} (from $h_{\rm init}$ cloud) \\
+back-map $\Psi_h$ (symplectic leapfrog) & \texttt{torch\_back\_integrate} \\
+joint loss \eqref{eq:loss} & \texttt{loss = -flow.log\_prob(z0, w0).mean()} \\
+joint fit driver & \texttt{fit\_h\_flow\_f0\_joint\_mle} \\
+10\% cap projection & \texttt{\_vpeak()} + \texttt{A\_nn.mul\_(A\_nn\_max/vp)} \\
+Test 10 experiment & notebook cells \texttt{test10-md}, \texttt{test10-code} \\
+\end{tabular}
+\end{center}
+
+\end{document}

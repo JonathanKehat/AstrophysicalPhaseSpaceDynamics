@@ -1,0 +1,135 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{hyperref}
+
+\newcommand{\Ntrue}{f_0^{\text{true}}}
+\newcommand{\HF}{\mathrm{HF}}
+
+\title{Same Pipeline, Drawn Opposite Ways:\\ A Note on the $f_0$ / Normalizing-Flow / Hamiltonian-Flow Picture}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Verdict}
+
+You're both drawing the same pipeline, just in opposite directions --- and that's
+allowed, because every map involved is invertible. So neither of you is ``wrong about
+the mechanics.'' But on the \emph{interpretation} of what the objects mean and what the
+deliverable is, you are more correct than your supervisor on two specific points, and he
+is right on one. Let me separate them.
+
+\section*{The one pipeline, written precisely}
+
+\paragraph{Data generation (forward).}
+\[
+  \Ntrue(z_0)
+  \;\xrightarrow{\ \text{sample}\ }\;
+  \{z_0^i\}
+  \;\xrightarrow{\ \HF(h_{\rm true})\ }\;
+  \{z_1^i\}
+  \qquad (\text{the observed data}).
+\]
+
+\paragraph{Inference.}
+The likelihood of the data under a model $(h,\theta)$ is evaluated as
+\[
+  z_1
+  \;\xrightarrow{\ \HF^{-1}(h)\ }\;
+  z_0(h)
+  \;\xrightarrow{\ g_\theta\ }\;
+  \tilde z_0 \sim \mathcal N(0,I),
+\]
+\[
+  f_{\rm model}(z_1)
+  =
+  \underbrace{%
+    \mathcal N\!\big(g_\theta(z_0(h))\big)\,
+    \left|\det\frac{\partial g_\theta}{\partial z_0}\right|
+  }_{\displaystyle \bar f_\theta(z_0)}
+  \;\cdot\;
+  \underbrace{%
+    \left|\det\frac{\partial\,\HF^{-1}}{\partial z_1}\right|
+  }_{\displaystyle =\,1\ (\text{symplectic})}.
+\]
+
+Your supervisor's arrows go up ($z_1\to z_0\to\tilde z_0$). That is exactly the
+normalizing / likelihood-evaluation direction. It's correct.
+
+Your arrows emphasize the generative / interpretation direction
+($\tilde z_0\to z_0$, giving $\bar f_\theta(z_0)$ to compare against $\Ntrue$).
+Also correct.
+
+They're the same diagram because $g_\theta$ and $\HF$ are both invertible. So the
+``disagreement'' is not about the code --- it's about semantics.
+
+\section*{Where you are right}
+
+\begin{enumerate}
+  \item \textbf{The standard Gaussian base is a tool, not a distribution in the chain.}
+  Your supervisor gives the top level the status of a reconstructed DF,
+  $\hat f_0(\tilde z_0)$. But $\tilde z_0$ is the flow's fixed latent reference
+  measure --- it is $\mathcal N(0,I)$ by construction, identical for every dataset and
+  every $\theta$. There is nothing to ``compare'' it to. The object you actually compare
+  to $\Ntrue$ lives in the $z_0$ space and is $\bar f_\theta(z_0)$. So promoting the
+  latent Gaussian to a named deliverable is the misleading part of 7166. You're right to
+  demote it.
+
+  \item \textbf{HF and NF are not the same kind of transformation.} This is the deeper
+  point. The NF ($g_\theta$) is a general diffeomorphism with a nontrivial Jacobian ---
+  it genuinely reshapes the density (that's how it turns a Gaussian into a
+  double-Gaussian, wings, etc.). Hamiltonian back-integration is symplectic
+  $\Rightarrow$ unit Jacobian $\Rightarrow$ Liouville: it does \emph{not} reshape $f$.
+  It just re-coordinatizes it,
+  \[
+    f_0(z_0) = f_1(z_1) \quad \text{along an orbit.}
+  \]
+  So ``$f_1(z_1)\to f_0(z_0)$'' as if HF transforms one density into a different one
+  blurs the physics. HF moves points; the DF value rides along unchanged. Only the NF is
+  doing distribution learning.
+\end{enumerate}
+
+\section*{Where your supervisor is right (and you should concede)}
+
+The whole thing can legitimately be read as one composition of invertible
+change-of-variables maps, and the object compared to truth does live in the $z_0$
+space --- which is what he means by ``the outcome is $f_0$ compared to
+$f_{\rm true}$.'' That statement is fine. His picture is a valid shorthand; it just
+over-dignifies the latent Gaussian and glosses the HF-vs-NF asymmetry.
+
+\section*{Two small precisions to your own wording}
+
+\begin{itemize}
+  \item ``$\{z_0^i(h)\}\xrightarrow{\ \mathrm{NF}\ }\bar f_\theta$'' makes it sound like
+  the NF maps points into a function. More precisely: $\bar f_\theta$ is a fixed
+  parametric density family, and MLE picks $\theta$ (jointly with $h$) so the
+  back-integrated cloud $\{z_0^i(h)\}$ has maximum likelihood under $\bar f_\theta$.
+  It's density estimation, not a deterministic point$\to$function map.
+
+  \item Say explicitly that the fit is joint in $(\theta,h)$ --- which you do --- because
+  that's what makes it a physics measurement rather than pure density estimation.
+\end{itemize}
+
+\section*{The point neither diagram makes (the actual crux)}
+
+Why is $h$ identifiable at all? Because $h$ enters only through $\HF^{-1}(h)$. The
+correct $h$ is the one that back-integrates today's data into a $z_0$ cloud that is
+consistent with the assumed/true initial DF. That's the whole physical content --- and,
+as your own results show, $h$ enters the potential only anharmonically, so this
+constraint is weak (flat/shallow NLL in $h$ unless the DF is informative). If you want a
+diagram that settles the argument, put the emphasis there: the NF learns the shape, and
+$h$ is whatever makes the back-integrated shape self-consistent with $\Ntrue$.
+
+\section*{Bottom line}
+
+Same pipeline, drawn opposite ways. Your framing is the more physically faithful one ---
+Gaussian $=$ tool, HF $=$ Liouville relabeling, goal $=$ recover $\Ntrue$ and $h$
+jointly. His ``chain of change-of-variables'' view is legitimate but shouldn't treat the
+latent Gaussian as an output or HF as a density-reshaping step.
+
+\end{document}

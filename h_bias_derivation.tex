@@ -1,0 +1,210 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+
+\newcommand{\htrue}{h_{\mathrm{true}}}
+\newcommand{\hhat}{\hat h}
+\newcommand{\dz}{\sigma_z}
+\newcommand{\dw}{\sigma_w}
+\newcommand{\rhohat}{\hat\rho}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+\title{Why the diagonal--Gaussian estimator of the dark--matter scale height\\
+sits about $1\sigma$ away from the truth}
+\author{Phase--space inference notes}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+When we recover the dark--matter scale height $h_{\rm dm}$ by back--integrating an
+observed phase--space snapshot and fitting a diagonal Gaussian (equivalently, a
+linear ``$a u + b$'' bijection) to the initial cloud, the profile--likelihood
+minimum lands a few parsec away from the true value---for our fiducial
+$N=\num{20000}$, seed--7 data set it sits at $h\simeq\SI{258}{pc}$ versus a truth
+of \SI{250}{pc}. This note shows that the offset is \emph{not} a systematic
+bias, an integrator artifact, or a modelling error: it is the ordinary
+$\sim\!1\sigma$ statistical scatter of the estimator. We derive the error bar
+$\sigma_h=\sigma_\rho/|d\rho/dh|\approx(1/\sqrt N)/|d\rho/dh|$ by propagating the
+sampling noise of a correlation coefficient through the estimating equation, and
+verify it reproduces the measured seed--to--seed scatter of \SI{8}{pc}.
+\end{abstract}
+
+\section{The observation}
+The data are $N$ stars drawn from a centred, separable initial distribution
+function $f_0(z_0,w_0)=\mathcal N(0,\dz^{\,0})\,\mathcal N(0,\dw^{\,0})$, evolved
+for $t_{\rm obs}=\SI{400}{Myr}$ in the true potential (scale height $\htrue=\SI{250}{pc}$),
+with no satellite. To infer $h$ we back--integrate the snapshot to $t=0$ under a
+trial potential of scale height $h$, obtaining a cloud $(z_0,w_0)=T_h(z,w)$, and
+fit a \emph{diagonal} Gaussian to it. The negative log--likelihood of that model
+depends only on the marginal widths,
+\begin{equation}
+  \mathrm{NLL}(h) \;=\; N\Big[\ln(2\pi) + \ln\dz(h) + \ln\dw(h) + 1\Big],
+  \label{eq:nll}
+\end{equation}
+so the estimator $\hhat=\arg\min_h \mathrm{NLL}(h)$ minimises the product
+$\dz(h)\,\dw(h)$. Empirically the minimum sits a few pc above $\htrue$, and it
+does so \emph{reproducibly} across our tests---simply because those tests reuse
+the same random seed.
+
+\section{What the estimator really measures}
+Write the $2\times2$ covariance of the back--integrated cloud as
+\begin{equation}
+  \Cov(h) =
+  \begin{pmatrix} \dz^2 & \rho\,\dz\dw \\ \rho\,\dz\dw & \dw^2 \end{pmatrix},
+  \qquad
+  \det\Cov(h) = \dz^2\dw^2\,(1-\rho^2),
+\end{equation}
+where $\rho(h)$ is the $z$--$w$ correlation coefficient. Hence
+\begin{equation}
+  \ln\big(\dz\dw\big) = \tfrac12\ln\det\Cov(h) - \tfrac12\ln\!\big(1-\rho(h)^2\big).
+  \label{eq:decomp}
+\end{equation}
+The back--integration $T_h$ is a \emph{symplectic} map, so it conserves the
+phase--space measure. For these near--harmonic clouds the second--moment area
+$\det\Cov(h)$ is conserved to excellent accuracy as well (numerically it is flat
+to $<0.1\%$ across the scanned range, $\det\Cov\simeq\num{2.645e7}$). With the
+first term in \eqref{eq:decomp} constant, minimising $\ln(\dz\dw)$ is
+\emph{equivalent to} maximising $1-\rho^2$, i.e.\ to the condition
+\begin{equation}
+  \boxed{\;\rhohat(\hhat)=0\;}
+  \label{eq:estimating}
+\end{equation}
+The diagonal model, which ignores the correlation, therefore places its optimum
+exactly at the scale height for which the recovered cloud is \emph{uncorrelated}.
+
+\section{Why $\rho=0$ is not exactly at the truth}
+At the true scale height the map $T_{\htrue}$ inverts the forward evolution and
+returns the original cloud, whose \emph{population} correlation is zero. But the
+\emph{sample} correlation of a finite draw is not exactly zero: for $N$ points
+with true correlation $\approx0$ it fluctuates about $0$ with a spread
+$\sigma_\rho$. Thus
+\begin{equation}
+  \rhohat(\htrue) \;=\; \underbrace{\rho_{\rm true}(\htrue)}_{=\,0} + \;\delta\rho,
+  \qquad \mathbb E[\delta\rho]=0,\quad \mathrm{SD}[\delta\rho]=\sigma_\rho .
+\end{equation}
+Because $\rhohat(\htrue)\neq0$ in any single realisation, the zero of
+$\rhohat(h)$---and hence $\hhat$---is displaced from $\htrue$.
+
+\section{The error bar: propagating $\sigma_\rho$ through the estimating equation}
+This is the delta method (equivalently, the implicit--function theorem) applied
+to \eqref{eq:estimating}. Linearise $\rhohat(h)$ about the truth,
+\begin{equation}
+  \rhohat(h) \;\approx\; \rhohat(\htrue) + \frac{d\rho}{dh}\,(h-\htrue),
+\end{equation}
+and impose $\rhohat(\hhat)=0$:
+\begin{equation}
+  \frac{d\rho}{dh}\,(\hhat-\htrue) + \delta\rho \approx 0
+  \qquad\Longrightarrow\qquad
+  \hhat-\htrue \;\approx\; -\,\frac{\delta\rho}{\,d\rho/dh\,}.
+  \label{eq:offset}
+\end{equation}
+Taking the standard deviation of \eqref{eq:offset} gives the central result,
+\begin{equation}
+  \boxed{\;\sigma_h \;=\; \frac{\sigma_\rho}{\left|d\rho/dh\right|}\;}
+  \label{eq:sigmah}
+\end{equation}
+This is the generic standard error of a root of an estimating equation
+$g(\hat\theta)=0$, namely $\mathrm{SE}(\hat\theta)=\mathrm{SD}[g]_{\rm truth}/|g'|$;
+it is the same ``output error $=$ input error $/$ sensitivity'' one uses for any
+indirect measurement.
+
+\paragraph{The $1/\sqrt N$ factor.} The remaining ingredient is the sampling
+scatter of a correlation coefficient. Fisher's classical result for the sample
+correlation $\hat\rho$ of a bivariate normal sample is
+\begin{equation}
+  \mathrm{Var}(\hat\rho) \;\approx\; \frac{(1-\rho^2)^2}{N}
+  \;\xrightarrow[\;\rho\to0\;]{}\; \frac1N,
+  \qquad\text{so}\qquad \sigma_\rho \approx \frac{1}{\sqrt N}.
+\end{equation}
+Substituting into \eqref{eq:sigmah},
+\begin{equation}
+  \sigma_h \;\approx\; \frac{1/\sqrt N}{\left|d\rho/dh\right|}.
+  \label{eq:sigmah_N}
+\end{equation}
+$N$ enters only here: more stars pin $\rho$ tighter, but the small slope
+$d\rho/dh$---the weak, anharmonic grip of $h$ on the data---sets a large lever
+arm that inflates the resulting uncertainty in $h$.
+
+\section{Numerical verification}
+For the fiducial data ($N=\num{20000}$, forward integration with
+\num{12000} steps) the decomposition \eqref{eq:decomp} is confirmed directly:
+$\det\Cov$ is flat, $\rho(h)$ marches monotonically through zero, and the
+$\ln(\dz\dw)$ minimum coincides with the $\rho=0$ crossing
+(Table~\ref{tab:decomp}).
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrr}
+\toprule
+$h$ [pc] & $\dz$ [pc] & $\rho$ & $\det\Cov$ \\
+\midrule
+230 & 258.1 & $+0.033$ & \num{2.646e7} \\
+250 & 257.4 & $+0.010$ & \num{2.645e7} \\
+259 & 257.2 & $\approx 0$ & \num{2.645e7} \\
+270 & 257.2 & $-0.011$ & \num{2.645e7} \\
+\bottomrule
+\end{tabular}
+\caption{The correlation $\rho(h)$ passes through $0$ near $h\simeq\SI{259}{pc}$,
+while $\det\Cov$ is essentially constant. The diagonal--Gaussian minimum tracks
+the $\rho=0$ point, not the truth.}
+\label{tab:decomp}
+\end{table}
+
+Repeating the fit over independent random seeds shows the offset is zero--mean and
+of the size predicted by \eqref{eq:sigmah} (Table~\ref{tab:seeds}). The measured
+slope is $|d\rho/dh|\approx\SI{0.0011}{pc^{-1}}$, and the sample scatter of the
+initial--cloud correlation across seeds is $\sigma_\rho=0.0088$ (versus the ideal
+$1/\sqrt{\num{20000}}=0.0071$; the excess comes from the evolve/back--integrate
+round trip mildly amplifying the noise). Equation~\eqref{eq:sigmah} then predicts
+\begin{equation}
+  \sigma_h \;=\; \frac{0.0088}{0.0011} \;\approx\; \SI{8.0}{pc},
+\end{equation}
+in close agreement with the directly measured seed--to--seed scatter of
+\SI{8.4}{pc}. The fiducial seed--7 result, $\hhat=\SI{259}{pc}$, is thus
+$+1.1\sigma$---an entirely ordinary draw.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+& $\rho_{\rm IC}$ & $\hhat-\htrue$ [pc] & \\
+\midrule
+seed 7 (fiducial) & $+0.0100$ & $+9.4$ & \\
+seed 1 & $+0.0036$ & $+3.7$ & \\
+seed 3 & $-0.0012$ & $-0.9$ & \\
+seed 2 & $-0.0130$ & $-11.9$ & \\
+seed 6 & $-0.0130$ & $-12.6$ & \\
+\midrule
+mean ($8$ seeds) & $\approx 0$ & $-3.5$ & (consistent with $0$) \\
+scatter ($8$ seeds) & $0.0088$ & $8.4$ & $\;\approx \sigma_h$ \\
+$N=\num{80000}$ scatter & $0.0038$ & $2.4$ & $\;\propto 1/\sqrt N$ \\
+\bottomrule
+\end{tabular}
+\caption{The minimum offset tracks the finite--sample initial--cloud correlation
+$\rho_{\rm IC}$, averages to zero, and shrinks as $1/\sqrt N$ (scatter
+$\SI{8.4}{pc}\to\SI{2.4}{pc}$ from $N=\num{20000}$ to $\num{80000}$).}
+\label{tab:seeds}
+\end{table}
+
+\section{Conclusion}
+The few--parsec displacement of the profile minimum is the $1\sigma$ statistical
+error of the estimator, not a bias:
+\begin{enumerate}\itemsep2pt
+  \item the diagonal/affine model reads $h$ only through the condition
+    $\rhohat(h)=0$;
+  \item in a finite sample $\rhohat(\htrue)\neq0$ by $\mathcal O(1/\sqrt N)$;
+  \item the shallow slope $d\rho/dh$ converts that tiny correlation error into a
+    displacement $\sigma_h=\sigma_\rho/|d\rho/dh|\approx(1/\sqrt N)/|d\rho/dh|$.
+\end{enumerate}
+For our data this is $\approx\SI{8}{pc}$ at $N=\num{20000}$, so the fiducial
+$\hhat=\SI{258}{pc}$ should be read as $h=250\pm8$~pc. The uncertainty is large
+not because the data are few but because each star carries little information
+about $h$ (the anharmonic insensitivity encoded in the small $d\rho/dh$); a
+richer estimator that uses more than the correlation could tighten it.
+\end{document}

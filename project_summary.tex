@@ -1,0 +1,140 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\setlength{\parskip}{0.4em}
+\setlength{\parindent}{0pt}
+
+\title{\vspace{-1.5em}Measuring the Dark-Matter Scale Height from Stellar Phase Space:\\
+\large A Summary of the Simulation--Recovery Experiments}
+\author{}
+\date{\today}
+
+\newcommand{\hdm}{h_{\rm dm}}
+\newcommand{\Phider}{\Phi}
+
+\begin{document}
+\maketitle
+\vspace{-3em}
+
+\section{The aim of the project}
+
+We want to measure the \textbf{dark-matter scale height} $\hdm$ of the Galactic
+disk from the vertical phase-space distribution of stars, $(z, w)$ (height above
+the midplane and vertical velocity), and---crucially---to understand \emph{when
+and why} that measurement is biased.
+
+The pipeline is a controlled, end-to-end numerical experiment:
+\begin{enumerate}[nosep]
+  \item \textbf{Generate} an initial stellar distribution function (DF) $f_0(z,w)$
+        at time $t=0$.
+  \item \textbf{Propagate} every star through a gravitational potential
+        $\Phider(z)$ by Hamiltonian (leapfrog) flow to the observation time
+        $t_{\rm obs}$, producing the ``observed'' phase-space cloud.
+  \item \textbf{Recover} the potential parameters---chiefly $\hdm$---by
+        \emph{back-integrating} the observed stars through a trial potential and
+        maximising the likelihood of the implied initial conditions. The whole
+        back-integration is differentiable, so the fit is done by gradient
+        descent (PyTorch autograd).
+\end{enumerate}
+
+Because we generate the data ourselves, the ground truth is known exactly, so any
+gap between the recovered and true $\hdm$ is a \emph{controlled bias} we can
+dissect.
+
+\paragraph{The key physical difficulty.} The dark-matter contribution to the
+potential is
+\[
+  \Phi_{\rm DM}(z) = 4\pi G\,\rho_{\rm DM}\, \hdm^2\,\log\cosh\!\left(\frac{z}{\hdm}\right).
+\]
+Expanding near the midplane, the curvature $\Phi_{\rm DM}''(0)=4\pi G\rho_{\rm DM}$
+is \textbf{independent of $\hdm$}; the scale height enters only through the
+\emph{anharmonic} terms ($\sim z^4/\hdm^2$ and higher). Hence $\hdm$ is imprinted
+only on high-$z$ / high-action stars and is intrinsically \emph{weakly
+constrained}. This single fact explains most of the results below: anything that
+perturbs the high-$z$ tail (a wrong DF shape, an unmodelled transient) can
+masquerade as a change in $\hdm$, and a slowly time-varying $\hdm(t)$ is nearly
+degenerate with a static end-point value.
+
+\section{What each test does}
+
+\paragraph{Test 1 --- Mismatched DF (a deliberate failure).}
+Data are generated with one DF; the fit assumes a \emph{different} DF (e.g. a
+mismatched velocity dispersion $\sigma$). This shows that an incorrect assumption
+about the stellar distribution biases $\hdm$. A first attempt to ``patch'' the
+mismatch with a small time-independent neural-network (NN) correction to the
+potential is included---and shown to be insufficient.
+
+\paragraph{Test 1b --- Bias asymmetry, quantified.}
+A verification of the direction and size of the Test-1 bias using the leading
+$r^2$ (harmonic) term and an exact-formula effective-radius fit. It confirms the
+bias is a real, predictable consequence of the DF mismatch, not a numerical
+artefact.
+
+\paragraph{Test 2 --- Can a time-dependent potential remove the bias?}
+One shared, biased dataset is fit with two different \emph{time-dependent}
+corrections, swept over an amplitude cap $\alpha$: (a) a physically-motivated
+\textbf{passing-satellite} model, and (b) a generic \textbf{Fourier $\hdm(t)$}.
+\emph{Lesson:} extra time-dependent freedom removes the bias \emph{only if it has
+the right functional form} (the satellite), not if it is a generic $\hdm(t)$. A
+smooth $\hdm(t)$ barely changes the likelihood---the data are nearly blind to it
+(the anharmonic/adiabatic degeneracy above)---so it cannot absorb a localised
+transient.
+
+\paragraph{Test 3 --- Give the fit an honest, larger freedom.}
+The fit is handed the \emph{full} single-Gaussian DF ($\mu_z,\mu_w,\sigma_z,
+\sigma_w$ all free) \emph{plus} a small NN potential bump capped at $10\%$ of the
+static potential peak, on a \emph{clean} dataset (static halo, no satellite, truth
+known exactly). Question: does this extra freedom still return the correct DF
+($\mu\!\approx\!0$, $\sigma\!\approx\!$ truth), the correct $\hdm\!\approx\!250$~pc,
+and a near-zero NN? This tests whether flexibility \emph{preserves} the answer
+when there is no real feature to absorb.
+
+\section{The two new tasks}
+
+These extend Test 3 by relaxing the assumption that we know the shape of the
+stellar DF---the honest stress test of the whole method.
+
+\paragraph{Task 1 --- Double-Gaussian DF $+$ time-dependent potential
+$\Phider(x)+\delta\Phi(x,t)$ \textnormal{\small(implemented)}.}
+The initial DF becomes a \textbf{two-component (cold $+$ hot) Gaussian mixture}
+with \emph{every} property free---both means and both dispersions of each
+component, plus the mixing weight $\pi$---and the potential gains a
+\textbf{time-dependent} correction $\delta\Phi(z,t)=A_{\rm nn}\,\mathrm{MLP}
+(z/z_{\max},\,t/t_{\rm end})$, capped at $10\%$ of the static peak. On a clean
+two-population dataset with a static halo, we ask whether the joint fit still
+recovers the true two-population DF \emph{and} the correct $\hdm$, with
+$\delta\Phi$ staying small. This checks that added DF freedom fixes DF-shape bias
+without opening a new degeneracy with $\delta\Phi(x,t)$.
+
+\paragraph{Task 2 --- Normalizing-flow DF $+$ $\Phider(x)+\delta\Phi(x,t)$
+\textnormal{\small(planned)}.}
+Task~1 pushed to the limit: $f_0$ becomes a \textbf{normalizing flow}, a neural
+density model able to represent \emph{any} smooth initial distribution. The
+dynamics are still forced to come entirely from the potential
+$\Phider(x)+\delta\Phi(x,t)$---the flow describes only the initial condition. The
+question ``\emph{does it still return the correct $\hdm$?}'' is genuinely
+non-trivial: a maximally flexible DF could in principle make $\hdm$
+unidentifiable. If $\hdm$ survives, the headline result follows: \textbf{the
+dark-matter scale height can be recovered without assuming the stellar
+distribution function}.
+
+\section{The through-line}
+
+Every test circles the same tension:
+\begin{itemize}[nosep]
+  \item Flexibility of the \emph{wrong shape} (a mismatched DF, a generic
+        $\hdm(t)$) \textbf{biases} $\hdm$ or fails to fix an existing bias.
+  \item Flexibility that is \emph{too generic} risks making $\hdm$
+        \textbf{degenerate}.
+  \item The goal is to find the freedom that is ``just right''---enough to absorb
+        our ignorance of $f_0$, structured enough to leave the dynamical
+        imprint of $\hdm$ intact.
+\end{itemize}
+Tasks~1 and~2 are the decisive experiments: they test whether letting $f_0$ be
+flexible removes DF-shape bias \emph{without} creating a new degeneracy with the
+time-dependent potential.
+
+\end{document}

@@ -1,0 +1,140 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title{Likelihood from Hamiltonian Flow: Derivation}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Step 1: Initial Distribution}
+
+Stars are assumed to be drawn at $t=0$ from a 2D Gaussian centred on the midplane:
+\[
+  f_0(z_0,\, w_0)
+  = \frac{1}{2\pi\,\sigma_z\,\sigma_w}
+    \exp\!\left(-\frac{z_0^{2}}{2\sigma_z^{2}} - \frac{w_0^{2}}{2\sigma_w^{2}}\right).
+\]
+
+\section*{Step 2: Liouville's Theorem}
+
+Hamiltonian dynamics preserve phase-space volume: the Jacobian of any canonical
+flow $\Phi^t$ is exactly $1$.  Therefore the probability density at observation
+time $t$ is obtained by \emph{back-integrating} each observed point
+$(z_\mathrm{obs},w_\mathrm{obs})$ to its initial condition
+$(z_0, w_0) = \Phi^{-t}_{h_{dm}}(z_\mathrm{obs}, w_\mathrm{obs})$:
+\[
+  f_t\!\left(z_\mathrm{obs},\, w_\mathrm{obs}\right)
+  = f_0\!\Bigl(\underbrace{\Phi^{-t}_{h_{dm}}(z_\mathrm{obs},\, w_\mathrm{obs})}_{%
+      (z_0,\,w_0)\;\text{back-integrated}}\Bigr).
+\]
+No Jacobian factor appears — it cancels exactly.
+
+\section*{Step 3: The Likelihood}
+
+For $N$ independently observed stars:
+\[
+\boxed{
+  \mathcal{L}(h_{dm})
+  = \prod_{i=1}^{N}
+    \frac{1}{2\pi\,\sigma_z\,\sigma_w}
+    \exp\!\left(-\frac{\bigl[z_0^{(i)}(h_{dm})\bigr]^{2}}{2\sigma_z^{2}}
+                -\frac{\bigl[w_0^{(i)}(h_{dm})\bigr]^{2}}{2\sigma_w^{2}}\right)
+}
+\]
+\textbf{Key point:} $z_0^{(i)}$ and $w_0^{(i)}$ are the \emph{back-integrated initial conditions},
+not the observed values.  $h_{dm}$ enters exclusively through this back-integration.
+
+\section*{Step 4: Log-Likelihood and Sensitivity}
+
+Taking the log:
+\[
+  \ln\mathcal{L}(h_{dm})
+  = \mathrm{const}
+    - \sum_{i=1}^{N}
+      \left[
+        \frac{\bigl[z_0^{(i)}(h_{dm})\bigr]^{2}}{2\sigma_z^{2}}
+        +
+        \frac{\bigl[w_0^{(i)}(h_{dm})\bigr]^{2}}{2\sigma_w^{2}}
+      \right].
+\]
+You maximise by finding $h_{dm}$ such that back-integrated orbits are most
+consistent with starting near the midplane (small $z_0$, small $w_0$).
+
+The gradient with respect to $h_{dm}$ is:
+\[
+  \frac{\partial \ln\mathcal{L}}{\partial h_{dm}}
+  = -\sum_{i=1}^{N}
+    \left[
+      \frac{z_0^{(i)}}{\sigma_z^{2}}\,\frac{\partial z_0^{(i)}}{\partial h_{dm}}
+      +
+      \frac{w_0^{(i)}}{\sigma_w^{2}}\,\frac{\partial w_0^{(i)}}{\partial h_{dm}}
+    \right].
+\]
+The partial derivatives $\partial z_0/\partial h_{dm}$ and $\partial w_0/\partial h_{dm}$
+are small because dark matter contributes only $\sim 8\%$ of the total gravitational
+force at typical orbit heights --- the back-integrated orbit barely changes when
+$h_{dm}$ is varied.
+
+\section*{Step 5: Force Budget}
+
+The gravitational force is a sum over sech$^2$ components:
+\[
+  K_z(z) = -\frac{d\Phi}{dz}
+  = -4\pi G\sum_\alpha \rho_{0,\alpha}\,h_\alpha\,\tanh\!\left(\frac{z}{h_\alpha}\right),
+\]
+with parameters:
+
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Component & $\rho_0\;[M_\odot/\mathrm{pc}^3]$ & $h\;[\mathrm{pc}]$
+          & $\rho_0 h$ & DM fraction at $z=250\;\mathrm{pc}$ \\
+\midrule
+Thin disk  & 0.04 & 200 & 8.0  & \\
+Thick disk & 0.01 & 400 & 4.0  & \\
+Gas        & 0.05 & 800 & 40.0 & \\
+\textbf{DM} & \textbf{0.01} & \textbf{250} & \textbf{2.5} & $\mathbf{8.3\%}$ \\
+\midrule
+Total      &      &     & 54.5 & \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.5em}
+
+Gas alone ($\rho_0 h = 40$) is $16\times$ larger than dark matter ($\rho_0 h = 2.5$).
+DM never exceeds $\sim 9\%$ of the total force at any relevant height.
+
+\section*{Step 6: Why the $\sigma$ Mismatch Fails}
+
+With a wrong $\sigma_{z,\mathrm{wrong}} < \sigma_{z,\mathrm{true}}$, the biased log-likelihood is:
+\[
+  \ln\mathcal{L}_\mathrm{biased}(h_{dm})
+  = \mathrm{const}
+    - \sum_{i}
+      \left[
+        \frac{\bigl[z_0^{(i)}\bigr]^{2}}{2\,\sigma_{z,\mathrm{wrong}}^{2}}
+        +
+        \frac{\bigl[w_0^{(i)}\bigr]^{2}}{2\,\sigma_{w,\mathrm{true}}^{2}}
+      \right].
+\]
+Shrinking $\sigma_z$ \emph{over-weights} the $z_0^2$ term, tilting the landscape.
+The shift of the peak scales as:
+\[
+  \Delta h_{dm} \;\propto\;
+  \frac{\text{tilt from mismatch}}{\text{curvature of }\ln\mathcal{L}}
+  \;\propto\;
+  \frac{1/\sigma_{z,\mathrm{wrong}}^{2} - 1/\sigma_{z,\mathrm{true}}^{2}}
+       {\;\partial^2 \ln\mathcal{L}/\partial h_{dm}^2\;}.
+\]
+Since the curvature (Fisher information in $h_{dm}$) is tiny due to the $\sim 8\%$
+DM fraction, even a large mismatch in $\sigma_z$ barely moves the optimum.
+
+\end{document}

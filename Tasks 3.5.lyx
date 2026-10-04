@@ -1,0 +1,1042 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language american
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Elliptic Shape Explanation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Phi=2\pi G\rho_{DM}h_{DM}^{2}\ln\cosh\left(\frac{z}{h_{DM}}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+since 
+\begin_inset Formula $z<<h_{DM}$
+\end_inset
+
+ for:
+\begin_inset Formula 
+\[
+\ln\left(\cosh\left(\frac{z}{h_{DM}}\right)\right)\approx\ln\left(1+\left(\frac{z}{h_{DM}}\right)^{2}\right)\approx\left(\frac{z}{h_{DM}}\right)^{2}
+\]
+
+\end_inset
+
+ so what we get is :
+\begin_inset Formula 
+\[
+\Phi=2\pi G\rho_{DM}z^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathrm{NLL}(\nu);\approx;\mathrm{NLL}(\nu_{t});+;\underbrace{\mathrm{NLL}'(\nu_{t})}{=,g},(\nu-\nu_{t});+;\tfrac{1}{2}\underbrace{\mathrm{NLL}''(\nu_{t})}{=,k},(\nu-\nu_{t})^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{d,\mathrm{NLL}}{d\nu};\approx;g;+;k,(\nu-\nu_{t})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Tasks
+\end_layout
+
+\begin_layout Standard
+1.
+ Understand the assymetry between Z and W in the missmatch fitting.
+ 
+\end_layout
+
+\begin_layout Standard
+2.
+ Continue to the part where we add a simple time dependent gravitational potential.
+\end_layout
+
+\begin_layout Section*
+Mismatch Fitted 
+\begin_inset Formula $\sigma_{z}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Harmonic Regime
+\end_layout
+
+\begin_layout Standard
+we have 
+\begin_inset Formula $\Phi(z)=\frac{1}{2}\nu^{2}z^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $H(z,w)=\frac{1}{2}w^{2}+\frac{1}{2}\nu^{2}z^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hamilton equations:
+\begin_inset Formula 
+\[
+\dot{z}=\frac{∂H}{∂w};\dot{w}=-\frac{∂H}{∂z}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is a simple harmonic oscillator with the solution:
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+z(t)\\
+w(t)
+\end{array}\right)=\left(\begin{array}{cc}
+\cos(\nu t) & \frac{1}{\nu}\sin(\nu t)\\
+-\nu\sin(\nu t) & \cos(\nu t)
+\end{array}\right)\left(\begin{array}{c}
+z_{0}\\
+w_{0}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+taking the inverse gives:
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+z_{0}\\
+w_{0}
+\end{array}\right)=\left(\begin{array}{cc}
+\cos(\nu t) & -\frac{1}{\nu}\sin(\nu t)\\
+\nu\sin(\nu t) & \cos(\nu t)
+\end{array}\right)\left(\begin{array}{c}
+z(t)\\
+w(t)
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is the analytic solution,
+ for a set of data 
+\begin_inset Formula $\left\{ z_{obs},w_{obs}\right\} $
+\end_inset
+
+ it is right in particular and depend on 
+\begin_inset Formula $\nu$
+\end_inset
+
+ (where the free parameter is):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+z_{0}(\nu)\\
+w_{0}(\nu)
+\end{array}\right)=\left(\begin{array}{cc}
+\cos(\nu t) & -\frac{1}{\nu}\sin(\nu t)\\
+\nu\sin(\nu t) & \cos(\nu t)
+\end{array}\right)\left(\begin{array}{c}
+z_{obs}\\
+w_{obs}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The data sees the truth sets of 
+\begin_inset Formula $\left\{ z_{obs}^{i},w_{obs}^{i}\right\} $
+\end_inset
+
+ which depends on the sampled 
+\begin_inset Formula $\left\{ z_{0}^{i},w_{0}^{i}\right\} $
+\end_inset
+
+ so in order to understand statistically the log likelihood behavior we need to connect the back integration equations to the sampled phase space.
+ 
+\end_layout
+
+\begin_layout Standard
+For that we need to place the true 
+\begin_inset Formula $\left\{ z_{obs}^{i},w_{obs}^{i}\right\} $
+\end_inset
+
+ dependence on 
+\begin_inset Formula $\left\{ z_{0}^{i},w_{0}^{i}\right\} $
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+z_{obs}^{i}\\
+w_{obs}^{i}
+\end{array}\right)=\left(\begin{array}{cc}
+\cos(\nu_{t}t) & \frac{1}{\nu_{t}}\sin(\nu_{t}t)\\
+-\nu_{t}\sin(\nu_{t}t) & \cos(\nu_{t}t)
+\end{array}\right)\left(\begin{array}{c}
+z_{0}^{i}\\
+w_{0}^{i}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\nu_{t}$
+\end_inset
+
+ is the true free parameter of the data.
+ 
+\end_layout
+
+\begin_layout Standard
+plugging this into the general dependence of 
+\begin_inset Formula $z_{0}(\nu),w_{0}(\nu)$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+\left(\begin{array}{c}
+z_{0}(\nu)\\
+w_{0}(\nu)
+\end{array}\right) & =\left(\begin{array}{cc}
+\cos(\nu t) & -\frac{1}{\nu}\sin(\nu t)\\
+\nu\sin(\nu t) & \cos(\nu t)
+\end{array}\right)\left(\begin{array}{cc}
+\cos(\nu_{t}t) & \frac{1}{\nu_{t}}\sin(\nu_{t}t)\\
+-\nu_{t}\sin(\nu_{t}t) & \cos(\nu_{t}t)
+\end{array}\right)\left(\begin{array}{c}
+z_{0}^{i}\\
+w_{0}^{i}
+\end{array}\right)\\
+ & =\left(\begin{array}{cc}
+A(\nu) & C(\nu)\\
+B(\nu) & D(\nu)
+\end{array}\right)\left(\begin{array}{c}
+z_{0}^{i}\\
+w_{0}^{i}
+\end{array}\right)
+\end{align*}
+
+\end_inset
+
+Where:
+\begin_inset Formula 
+\begin{align*}
+A(\nu) & =\cos\theta_{t}\cos\theta+\frac{\nu_{t}}{\nu}\sin\theta_{t}\sin\theta\\
+B(\nu) & =\frac{1}{\nu_{t}}\sin\theta_{t}\cos\theta-\frac{1}{\nu}\cos\theta_{t}\sin\theta\\
+C(\nu) & =\nu\cos\theta_{t}\sin\theta-\nu_{t}\sin\theta_{t}\cos\theta\\
+D(\nu) & =\frac{\nu}{\nu_{t}}\sin\theta_{t}\sin\theta+\cos\theta_{t}\cos\theta
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The NLL(Negative log likelihood) is:
+\begin_inset Formula 
+\[
+\text{NLL}(\nu)=\frac{\langle z_{0}(\nu)^{2}\rangle}{2\sigma_{z,\text{fit}}^{2}}+\frac{\langle w_{0}(\nu)^{2}\rangle}{2\sigma_{w,\text{fit}}^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the harmonic case we can write the explicit dependence :
+\begin_inset Formula 
+\begin{align*}
+\langle z_{0}(\nu)^{2}\rangle & =A^{2}(\nu)\langle\left(z_{0}^{i}\right)^{2}\rangle+\underbrace{A(\nu)C(\nu)\langle z_{0}^{i}\rangle\langle w_{0}^{i}\rangle}_{0}+C^{2}(\nu)\langle\left(w_{0}^{i}\right)^{2}\rangle=\\
+ & =\left(\sigma_{z}^{true}\right)^{2}A^{2}(\nu)+\left(\sigma_{w}^{true}\right)^{2}C^{2}(\nu)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\langle w_{0}(\nu)^{2}\rangle=\left(\sigma_{z}^{true}\right)^{2}B^{2}(\nu)+\left(\sigma_{w}^{true}\right)^{2}D^{2}(\nu)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\text{NLL}(\nu)=\frac{\left(\sigma_{z}^{true}\right)^{2}A^{2}(\nu)+\left(\sigma_{w}^{true}\right)^{2}C^{2}(\nu)}{2\left(\sigma_{z}^{\text{fit}}\right)^{2}}+\frac{\left(\sigma_{z}^{true}\right)^{2}B^{2}(\nu)+\left(\sigma_{w}^{true}\right)^{2}D^{2}(\nu)}{2\left(\sigma_{w}^{\text{fit}}\right)^{2}}\equiv\frac{V_{z}}{2\left(\sigma_{z}^{\text{fit}}\right)^{2}}+\frac{V_{w}}{2\left(\sigma_{w}^{\text{fit}}\right)^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So we know how the likelihood changes when we mismatch 
+\begin_inset Formula $\sigma_{z}^{\text{fit}},\sigma_{w}^{\text{fit}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{z}^{\text{true}},\sigma_{w}^{\text{true}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+The NLL relation to the fitted parameter 
+\begin_inset Formula $\nu$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+expanding the NLL around the minimum 
+\begin_inset Formula $\nu=\nu_{t}$
+\end_inset
+
+ gives:
+ 
+\begin_inset Formula 
+\[
+\text{NLL}(\nu_{t}+t)=\text{NLL}(\nu_{t})+\text{NLL}'(\nu_{t})t+\text{NLL}''(\nu_{t})t^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+when you look for the minimum :
+\begin_inset Formula 
+\begin{align*}
+\frac{d}{dt}\text{NLL} & =\text{NLL}'(\nu_{t})+\text{NLL}''(\nu_{t})t=0\\
+t & =-\frac{\text{NLL}'(\nu_{t})}{\text{NLL}''(\nu_{t})}=\nu_{t}-\nu=\delta\nu
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is the definition of a newton step optimization which in our simulation will be the change in the fitted parameter 
+\begin_inset Formula $\nu(h_{DM})$
+\end_inset
+
+.
+ In a parabola the newton step is the distance from the minimum :
+\end_layout
+
+\begin_layout Standard
+in our case this is approximately correct.
+ 
+\end_layout
+
+\begin_layout Standard
+we can calculate that exactly when we mismatch the STDEV of the fitted pdf.
+\end_layout
+
+\begin_layout Standard
+Example for a parabola :
+\begin_inset Formula 
+\[
+f(x)=3x^{2}+6x+8
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The minimum is :
+\begin_inset Formula 
+\begin{align*}
+f'(x) & =6x+6=0\\
+x_{min} & =-1
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+when we expand near 
+\begin_inset Formula $x=2$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\[
+t=-\frac{18}{6}=-3
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+so the minimum is exactly at:
+\begin_inset Formula 
+\[
+x_{min}=x_{expand}+t=-1
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+First Derivative of NLL
+\end_layout
+
+\begin_layout Standard
+Diffrentiating A B C and D:
+\begin_inset Formula 
+\begin{align*}
+A' & =-\frac{sin^{2}\theta_{t}}{\nu_{t}}\\
+C' & =-\frac{t}{\nu_{t}}+\frac{sin2\theta_{t}}{2\nu_{t}^{2}}\\
+B' & =\nu_{t}t+\frac{\sin2\theta_{t}}{2}\\
+D' & =\frac{\sin^{2}\theta_{t}}{\nu_{t}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the likelihood is :
+\begin_inset Formula 
+\begin{align*}
+\text{NLL}' & =\frac{V_{z}'}{2\left(\sigma_{z}^{\text{fit}}\right)^{2}}+\frac{V_{w}'}{2\left(\sigma_{w}^{\text{fit}}\right)^{2}}=\\
+ & =-\frac{\left(\sigma_{z}^{true}\right)^{2}\sin^{2}\theta_{t}}{\nu_{t}\left(\sigma_{z}^{\text{fit}}\right)^{2}}+\frac{\left(\sigma_{w}^{true}\right)^{2}\sin^{2}\theta_{t}}{\nu_{t}\left(\sigma_{w}^{\text{fit}}\right)^{2}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+we can see that if 
+\begin_inset Formula $\sigma_{z}^{true}=\sigma_{z}^{fit}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{w}^{true}=\sigma_{w}^{fit}$
+\end_inset
+
+ we get the minimum.
+\end_layout
+
+\begin_layout Subsubsection*
+Second Derivative of NLL
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+V''_{z}(\nu_{t}) & =2\left(\sigma_{z}^{true}\right)^{2}\left[(A')^{2}+AA''\right]|_{\nu_{t}}+2\left(\sigma_{w}^{true}\right)^{2}\left[(C')^{2}+CC''\right]|_{\nu_{t}}\\
+V''_{w}(\nu_{t}) & =2\left(\sigma_{z}^{true}\right)^{2}\left[(B')^{2}+BB''\right]|_{\nu_{t}}+2\left(\sigma_{w}^{true}\right)^{2}\left[(D')^{2}+DD''\right]|_{\nu_{t}}
+\end{align*}
+
+\end_inset
+
+Second derivatives for A and D are the important ones:
+\begin_inset Formula 
+\[
+A''(\nu_{t})\approx-t^{2}+O(t);D''(\nu_{t})\approx-t^{2}+O(t)
+\]
+
+\end_inset
+
+ for C and B the important conributions are from 
+\begin_inset Formula $C'^{2},B'^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(C'(\nu_{t})\right)^{2}\approx-\frac{t^{2}}{\nu_{t}^{2}}+O(t);\left(B'(\nu_{t})\right)^{2}\approx-\nu_{t}^{2}t^{2}+O(t)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+so the second derivative of the components of 
+\begin_inset Formula $\text{NLL}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+V_{z}''(\nu_{t}) & \approx2t^{2}\left(\left(\frac{\sigma_{w}^{true}}{\nu_{t}}\right)^{2}-\left(\sigma_{z}^{true}\right)^{2}\right)\\
+V_{w}''(\nu_{t}) & \approx2t^{2}\left(\left(\sigma_{z}^{true}\nu_{t}\right)^{2}-\left(\sigma_{w}^{true}\right)^{2}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we define two important parameters that dictates the behavior of the simulation.
+ 
+\end_layout
+
+\begin_layout Standard
+1.
+ the dimensionless mismatch ratio:
+\begin_inset Formula 
+\[
+R\equiv\frac{\sigma_{w}^{\text{true}}}{\nu_{t}\sigma_{z}^{\text{true}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+this is a property of the simulation that dictates the fit behavior.
+\end_layout
+
+\begin_layout Standard
+The second derivative could be expressed with 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+V_{z}''(\nu_{t}) & =2\left(\sigma_{z}^{\text{true}}\right)^{2}t^{2}\left(R^{2}-1\right)\\
+V_{w}''(\nu_{t}) & =2\left(\sigma_{w}^{\text{true}}\right)^{2}t^{2}\left(1/R^{2}-1\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+2.
+ the mismatch for the fit and show how it changes between the position and momentum:
+ 
+\begin_inset Formula $r=\frac{\sigma_{i}^{\text{true}}}{\sigma_{i}^{\text{fit}}}$
+\end_inset
+
+,
+ where 
+\begin_inset Formula $i=z,w$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Mismatching 
+\begin_inset Formula $\sigma_{z}$
+\end_inset
+
+ - 
+\begin_inset Formula $r=\frac{\sigma_{z}^{\text{true}}}{\sigma_{z}^{\text{fit}}},$
+\end_inset
+
+
+\begin_inset Formula $\sigma_{w}^{\text{true}}=\sigma_{w}^{\text{fit}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{NLL}'(\nu_{t}) & =\frac{V'(\nu_{t})}{\left(\sigma_{w}^{\text{fit}}\right)^{2}}+r^{2}\frac{V'(\nu_{t})}{\left(\sigma_{z}^{\text{fit}}\right)^{2}}=-\frac{2\sin^{2}\theta_{t}}{\nu_{t}}(r^{2}-1)\\
+\text{NLL}''(\nu_{t}) & =\frac{V''(\nu_{t})}{\left(\sigma_{w}^{\text{fit}}\right)^{2}}+r^{2}\frac{V''(\nu_{t})}{\left(\sigma_{z}^{\text{fit}}\right)^{2}}\approx2t^{2}R^{2}r^{2}-2t^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+so the mismatch in z causes the shift of the fitted parameter by:
+\begin_inset Formula 
+\[
+\delta\nu_{z}\approx\frac{\sin^{2}\theta_{t}(r^{2}-1)}{\nu_{t}t^{2}(R^{2}r^{2}-1)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Mismatching 
+\begin_inset Formula $\sigma_{w}$
+\end_inset
+
+ - 
+\begin_inset Formula $r=\frac{\sigma_{w}^{\text{true}}}{\sigma_{w}^{\text{fit}}},$
+\end_inset
+
+
+\begin_inset Formula $\sigma_{z}^{\text{true}}=\sigma_{z}^{\text{fit}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{NLL}'(\nu_{t}) & =\frac{V'(\nu_{t})}{\left(\sigma_{w}^{\text{fit}}\right)^{2}}+r^{2}\frac{V'(\nu_{t})}{\left(\sigma_{z}^{\text{fit}}\right)^{2}}=\frac{2\sin^{2}\theta_{t}}{\nu_{t}}(r^{2}-1)\\
+\text{NLL}''(\nu_{t}) & =\frac{V''(\nu_{t})}{\left(\sigma_{w}^{\text{fit}}\right)^{2}}+r^{2}\frac{V''(\nu_{t})}{\left(\sigma_{z}^{\text{fit}}\right)^{2}}\approx2t^{2}R^{2}-2t^{2}r^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+so the mismatch in z causes the shift of the fitted parameter by:
+\begin_inset Formula 
+\[
+\delta\nu_{w}\approx\frac{\sin^{2}\theta_{t}(r^{2}-1)}{\nu_{t}t^{2}(R^{2}-r^{2})}
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+So the asymmetry is:
+\begin_inset Formula 
+\[
+\frac{\delta\nu_{w}}{\delta\nu_{z}}=\frac{(\cancel{t^{2}}R^{2}r^{2}-\cancel{t^{2}})}{(\cancel{t^{2}}R^{2}-\cancel{t^{2}}r^{2})}=\frac{R^{2}r^{2}-1}{R^{2}-r^{2}}
+\]
+
+\end_inset
+
+ 
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Assumptions
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Where it enters
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+How to generalize
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Harmonic Regime 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $\Phi\sim z^{2}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+The back integration flow
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Solve for the full 
+\begin_inset Formula $\Phi$
+\end_inset
+
+,
+ 
+\end_layout
+
+\begin_layout Plain Layout
+the solution will be numerical 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Newton step find the min
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+calculation of 
+\begin_inset Formula $\delta\nu$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+leading 
+\begin_inset Formula $\left(\nu t\right)^{2}$
+\end_inset
+
+ only
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+calculation of 
+\begin_inset Formula $\delta\nu$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+just take more 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $R>r$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+calculation of 
+\begin_inset Formula $\delta\nu$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+go beyond this regime
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Test 2 - Adding a time dependent potential 
+\end_layout
+
+\begin_layout Subsection*
+Test 2a Adding a satellite
+\end_layout
+
+\begin_layout Standard
+The new potential is:
+\begin_inset Formula 
+\[
+\Phi(z)=\Phi(z)+\alpha\delta\Phi_{}(z)*\Theta(t_{end}-t_{start})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Test 2b Adding time dependent part 
+\end_layout
+
+\begin_layout Standard
+The new potential is:
+\begin_inset Formula 
+\[
+\Phi(z)=\Phi_{h_{dm}(t)}(z)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the time dependency is 
+\begin_inset Formula $h(t)=\boldsymbol{h_{0}}+\boldsymbol{\alpha}\cdotΣ_{k=1}^{3}[\mathbf{a_{k}}cos(2πk·t/t_{obs})+\mathbf{b_{k}}sin(2πk\cdot t/t_{obs})]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+so 8 free parameters 
+\end_layout
+
+\begin_layout Subsection*
+Test 3 - adding a NN 
+\end_layout
+
+\begin_layout Standard
+That constitues up to 10% of the total potential.
+ 
+\end_layout
+
+\end_body
+\end_document

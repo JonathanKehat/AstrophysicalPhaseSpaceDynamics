@@ -1,0 +1,111 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\title{Why the measured bias ratio runs above $r^2$ at large $r$}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{The $r^2$ prediction was a leading-order limit}
+
+In \texttt{sigma\_mismatch\_full\_derivation.pdf} we wrote
+\begin{equation}
+\frac{|\delta h_w|}{|\delta h_z|} \;\simeq\; r^2,
+\end{equation}
+but this used the approximation $r^2 \ll R^2$ in the curvature denominators. Keeping
+\emph{all} terms gives the exact Newton-step ratio.
+
+\section*{The exact Newton-step ratio}
+
+The two Cases differ only in their second-derivative denominators:
+\begin{align}
+\text{Case A (mismatch $\sigma_w$):}\quad
+\mathrm{NLL}''(\nu_t) &= \frac{V_z''}{\sigma_z^2} + r^2\frac{V_w''}{\sigma_w^2}
+  \;\simeq\; 2t^2\bigl(R^2 - r^2\bigr),\\[4pt]
+\text{Case B (mismatch $\sigma_z$):}\quad
+\mathrm{NLL}''(\nu_t) &= r^2\frac{V_z''}{\sigma_z^2} + \frac{V_w''}{\sigma_w^2}
+  \;\simeq\; 2t^2\bigl(R^2 r^2 - 1\bigr).
+\end{align}
+The two gradients (numerators) have equal magnitude $\propto (r^2-1)$, so:
+\begin{equation}
+\boxed{\;
+\frac{|\delta h_w|}{|\delta h_z|} \;=\; \frac{R^2 r^2 - 1}{R^2 - r^2}.
+\;}
+\label{eq:exact}
+\end{equation}
+
+\section*{Expanding the correction}
+
+Factor out $r^2$:
+\begin{equation}
+\frac{|\delta h_w|}{|\delta h_z|}
+\;=\; r^2 \cdot
+\underbrace{\frac{1 - 1/(R^2 r^2)}{1 - r^2/R^2}}_{\text{correction factor}}
+\;\approx\; r^2 \cdot \frac{1}{\,1 - r^2/R^2\,}.
+\label{eq:correction}
+\end{equation}
+The correction factor is $\geq 1$ and grows monotonically with $r$. For $r\ll R$ it is
+$\approx 1$, recovering the $r^2$ scaling. As $r\to R$ it diverges — at $r=R$ the
+Case-A curvature vanishes and the bias truly runs away.
+
+\section*{Numerical example with $R_{\rm eff}=20$}
+
+\begin{center}
+\begin{tabular}{rrrrr}
+\toprule
+$r$ & $r^2/R^2$ & correction & predicted ratio & pure $r^2$ \\
+\midrule
+1.5 & 0.006 & 1.006 &   2.27 &   2.25 \\
+2.0 & 0.010 & 1.010 &   4.04 &   4.00 \\
+3.0 & 0.022 & 1.023 &   9.21 &   9.00 \\
+5.0 & 0.063 & 1.067 &  26.67 &  25.00 \\
+10  & 0.250 & \textbf{1.333} & \textbf{133.3} & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At $r=10$ with $R_{\rm eff}\sim 20$, the measured ratio sits roughly $33\%$ above the
+$r^2$ line — exactly the trend you observed.
+
+\section*{Why this happens physically}
+
+In Case A, shrinking $\sigma_{w,\rm fit}$ by a factor $r$ multiplies the
+\emph{negative} curvature of the $V_w$-direction by $r^2$. That negative curvature
+cancels against the positive $V_z$-curvature. The total curvature is
+$\propto(R^2 - r^2)$ — \emph{decreasing} with $r$. As the valley flattens, the
+optimum slides further before the (now weaker) restoring force stops it. So
+$|\delta h_w|$ grows \emph{faster} than $r^2$.
+
+In Case B, both curvatures contribute with the same sign — the valley only stiffens
+as $r$ grows. The bias $|\delta h_z|$ decreases with $r$ at the rate the leading-order
+formula predicts. No correction.
+
+\section*{How to extract $R_{\rm eff}$ from the data}
+
+Fit the measured ratios to \eqref{eq:exact} with $R_{\rm eff}$ as a single free
+parameter:
+\begin{equation}
+\text{ratio}(r;\,R_{\rm eff}) = \frac{R_{\rm eff}^2 r^2 - 1}{R_{\rm eff}^2 - r^2}.
+\end{equation}
+A clean fit with a physically sensible $R_{\rm eff}$ value (consistent with
+$\sigma_w/(\nu_t\sigma_z)$ for the simulation) confirms that the deviation from $r^2$
+is the predicted curvature-cancellation effect, not anharmonicity or finite-$N$
+noise.
+
+\section*{Summary}
+
+\begin{itemize}
+\item $r^2$ is the leading-order prediction, valid for $r\ll R$.
+\item The exact ratio is $\dfrac{R^2 r^2 - 1}{R^2 - r^2}$, which always lies
+\emph{above} $r^2$ and diverges as $r\to R$.
+\item Your observed up-curve at $r=10$ is the precursor of the $r=R$ runaway.
+\item A one-parameter fit for $R_{\rm eff}$ on the measured ratios will confirm
+the mechanism quantitatively.
+\end{itemize}
+
+\end{document}

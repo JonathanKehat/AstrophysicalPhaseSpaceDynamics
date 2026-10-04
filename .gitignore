@@ -1,0 +1,34 @@
+# --- Python / environments ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# --- editors / OS ---
+.DS_Store
+.idea/
+.vscode/
+.claude/
+
+# --- LaTeX / LyX build artefacts (sources .tex/.lyx are tracked) ---
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.lyx~
+
+# --- large / third-party binaries ---
+Mo - Galaxy Formation and Evolution..pdf
+*.key
+
+# --- generated results (regenerate, or copy with rsync/scp) ---
+results/*
+!results/.gitkeep
+!results/*.json
+results/hyperopt_jobs/
+logs/
+*.err

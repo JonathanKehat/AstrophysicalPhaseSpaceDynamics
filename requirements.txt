@@ -1,0 +1,15 @@
+# Runtime dependencies.  Versions that are known to work locally:
+#   python 3.9.6, torch 2.8.0, numpy 1.26.4, scipy 1.13.1, matplotlib 3.9.4,
+#   pandas 2.3.3, scikit-learn 1.6.1
+# On the cluster, install a CPU-only torch first (cluster/setup_env.sh does this):
+# the fits are CPU / memory bound and the CUDA wheels are ~2 GB.
+torch>=2.2
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8
+pandas>=2.0
+scikit-learn>=1.3
+
+# Only needed to open / run the notebooks
+ipykernel
+nbformat

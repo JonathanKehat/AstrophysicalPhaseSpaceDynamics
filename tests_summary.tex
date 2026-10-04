@@ -1,0 +1,108 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\setlength{\parskip}{0.4em}
+\setlength{\parindent}{0pt}
+
+\title{\vspace{-1.5em}Minimizer Verification and DF-Freedom Degeneracy:\\
+\large Summary of the Latest Runs}
+\author{}
+\date{\today}
+
+\newcommand{\hdm}{h_{\rm dm}}
+
+\begin{document}
+\maketitle
+\vspace{-3em}
+
+\section*{Motivation}
+Before trusting the flexible-distribution-function (DF) experiments, we test the
+\emph{minimizer itself}: if we hand the fit a small correction to the potential,
+does it still recover the dark-matter scale height $\hdm$, or does it prefer to
+distort the potential? Recall the physical difficulty: $\hdm$ enters the potential
+only through anharmonic terms, so it is weakly constrained and easy to trade
+against other freedoms. All runs below use clean, self-generated data (static
+halo at $\hdm^{\rm true}=250$~pc, no satellite), so the truth is known exactly.
+
+\section{Test A --- Free double-Gaussian DF + time-dependent $\delta\Phi(x,t)$}
+
+\textbf{Setup.} Data drawn from a genuine two-population DF (cold
+$\sigma_z,\sigma_w=6,12$; hot $25,45$; mixing $\pi=0.6$). The fit is given
+\emph{maximal} freedom: a two-component Gaussian mixture with \emph{every}
+property free (both means, both dispersions of each component, and $\pi$),
+\emph{plus} a time-dependent potential correction
+$\delta\Phi(x,t)=A_{\rm nn}\,\mathrm{MLP}(z/z_{\max},t/t_{\rm end})$ capped at
+$10\%$ of the static potential peak. Fit started off truth ($h_{\rm init}=200$).
+
+\textbf{Result.}
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+parameter & truth & fitted \\
+\midrule
+$\hdm$ [pc]      & 250.0 & \textcolor{red}{133.0 \;($-46.8\%$)} \\
+$\pi_{\rm cold}$ & 0.60  & 0.36 \\
+cold $(\sigma_z,\sigma_w)$ & (6, 12) & (12.1, 5.4) \\
+hot $(\sigma_z,\sigma_w)$  & (25, 45)& (100.0$^\dagger$, 31.6) \\
+\bottomrule
+\end{tabular}
+\end{center}
+{\small $^\dagger$ pinned at the upper $\sigma$ clamp.} \;
+$\delta\Phi$ reached only $0.11\%$ of the potential peak (cap $10\%$).
+
+\textbf{Reading.} $\hdm$ is badly biased ($-47\%$), but \emph{not} because the
+time-dependent correction absorbed signal --- $\delta\Phi$ stayed essentially off
+($0.11\%$). The bias is driven by the \textbf{free double-Gaussian DF collapsing
+to a degenerate corner} (the ``hot'' component runs to the $\sigma_z=100$ bound,
+the weight and dispersions are wrong). Handing the fit two full Gaussian
+components on this dataset is under-constrained: the DF freedom, not the
+potential, corrupts $\hdm$. This run is therefore \emph{confounded} and cannot,
+by itself, tell us whether the data favor a time-dependent potential.
+
+\section{Test B --- Minimizer sanity: known DF + a $10\%$ static NN bump}
+
+\textbf{Setup.} Remove the DF freedom. The DF is \emph{fixed at truth}
+(single Gaussian, $\sigma_z,\sigma_w=10,20$); only $\hdm$ (started at 200) and a
+static NN potential correction, capped at $10\%$ of the static potential peak,
+are free. Same clean data.
+
+\textbf{Result.}
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+parameter & truth & fitted \\
+\midrule
+$\hdm$ [pc] & 250.0 & \textcolor{blue}{248.75 \;($-0.5\%$)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+The NN correction reached only $0.01\%$ of the potential peak (cap $10\%$): it
+did not engage.
+
+\textbf{Reading.} With the DF known, the minimizer recovers $\hdm$ essentially
+perfectly ($-0.5\%$) and \emph{declines} to add a potential correction even though
+it is allowed up to $10\%$. Two conclusions:
+\begin{itemize}\itemsep2pt
+  \item The optimizer is trustworthy --- given the correct DF it returns the
+        correct $\hdm$ and leaves the extra potential freedom near zero.
+  \item On this clean, static dataset the data are \textbf{rigid} to a
+        (time-independent) potential correction: there is no feature for the NN
+        to absorb, so it stays off.
+\end{itemize}
+
+\section*{Takeaways and next step}
+The contrast between A and B localises the problem: the $-47\%$ bias in Test~A
+comes from \textbf{DF over-freedom} (an unconstrained two-Gaussian mixture), not
+from the potential correction, which barely moved in either run. The minimizer is
+sound (Test~B).
+
+\textbf{Open question for the next tests.} Test~B used a \emph{static} NN. To
+answer whether \emph{the data favor time dependence}, the clean comparison is to
+repeat Test~B with a \emph{time-dependent} NN and check whether it reaches a lower
+NLL / moves $\hdm$ relative to the static case. If both stay near $0\%$ with
+$\hdm\approx250$, the data are rigid to a time-dependent potential --- the result
+we are ultimately after.
+
+\end{document}

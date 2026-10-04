@@ -1,0 +1,219 @@
+\documentclass[11pt]{article}
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+\title{Why a Time-Dependent Neural-Network Potential Correction\\
+Cannot Recover $h_{\rm true}$ Under an Initial-PDF Mismatch}
+\author{}
+\date{}
+
+\newtheorem*{claim}{Claim}
+
+\begin{document}
+\maketitle
+
+\section*{Setup}
+
+We back-integrate observed stellar coordinates $(z_i, w_i)$ at observation
+time $t_{\rm obs}$ to initial coordinates $(z_i(0), w_i(0))$ using a model
+gravitational potential
+\begin{equation}
+  \Phi_{\rm model}(z, t) \;=\; \Phi_{\rm static}(z;\,h) \;+\; V_{\rm nn}(z, t),
+\end{equation}
+where $\Phi_{\rm static}$ is the fixed baryon $+$ dark-matter-halo contribution
+parametrised by the dark-matter scale height $h$, and $V_{\rm nn}(z, t)$ is an
+arbitrary neural-network potential correction.  The likelihood assumes a
+Gaussian initial distribution,
+\begin{equation}
+  f_0(z, w) \;=\; \mathcal{N}(0, \sigma_{z,\rm fit})\;\times\;\mathcal{N}(0, \sigma_{w,\rm fit}),
+\end{equation}
+and the maximum-likelihood estimate minimises
+\begin{equation}
+  \mathrm{NLL}(h, V_{\rm nn}) \;=\; \sum_i \left[\,\tfrac{1}{2}\,\frac{z_i(0)^2}{\sigma_{z,\rm fit}^2} + \tfrac{1}{2}\,\frac{w_i(0)^2}{\sigma_{w,\rm fit}^2}\,\right] + \mathrm{const}.
+\label{eq:nll}
+\end{equation}
+over $(h, V_{\rm nn})$ jointly.  The data was generated with
+$(\sigma_{z,\rm true}, \sigma_{w,\rm true})$.  The ``PDF mismatch'' we study is
+the case in which $\sigma_{w,\rm fit} < \sigma_{w,\rm true}$ (the argument is
+identical for $\sigma_{z,\rm fit} < \sigma_{z,\rm true}$).
+
+\section*{Claim}
+
+\begin{claim}
+No $V_{\rm nn}(z, t)$ --- regardless of architecture, time-dependence, network
+capacity, or physical constraints (positivity, smoothness, finite mass, etc.)
+--- can move the joint MLE to $h^* = h_{\rm true}$.
+\end{claim}
+
+The argument below proceeds in five short steps.  The conclusion is
+\emph{structural}: the bias lives in the loss function itself, not in the model
+space, and no enrichment of the model space can compensate for that.
+
+\section*{Step 1: At the truth, the loss is large, not small}
+
+Plug in the correct model: $h = h_{\rm true}$, $V_{\rm nn} \equiv 0$.  The
+dynamics are then exactly those used to generate the data, and the
+back-integration is exact:
+\begin{equation}
+  w_i(0) \sim \mathcal{N}(0,\, \sigma_{w,\rm true}),
+  \qquad
+  z_i(0) \sim \mathcal{N}(0,\, \sigma_{z,\rm true}).
+\end{equation}
+The expected per-star $w$-term in the NLL is
+\begin{equation}
+  \mathbb{E}\!\left[\,\tfrac{1}{2}\,\frac{w(0)^2}{\sigma_{w,\rm fit}^2}\,\right]
+  \;=\;
+  \tfrac{1}{2}\,\frac{\sigma_{w,\rm true}^2}{\sigma_{w,\rm fit}^2}.
+\end{equation}
+When $\sigma_{w,\rm fit} < \sigma_{w,\rm true}$, this is much larger than the
+$\tfrac{1}{2}$ that would obtain if the PDF were correct.  The truth is
+\emph{not} a stationary point of the loss; the gradient
+$\partial\mathrm{NLL}/\partial h$ at $(h_{\rm true}, 0)$ is non-zero, and the
+optimiser will move \emph{away} from the truth in order to reduce the loss.
+
+\section*{Step 2: The loss minimum lies wherever the back-integrated\\ $w$-distribution is narrow}
+
+The optimiser wants the back-integrated initial-velocity variance to satisfy
+\begin{equation}
+  \langle w(0)^2 \rangle \;\approx\; \sigma_{w,\rm fit}^2
+\end{equation}
+so that the squared term in~\eqref{eq:nll} is of order one.  Two
+\emph{physically independent} mechanisms in the model can produce such a narrow
+$w(0)$ distribution:
+\begin{description}[leftmargin=2em, style=nextline]
+  \item[(a) Drift in $h$.]
+  Lowering $h$ increases the magnitude of the anharmonic $z^4/h^2$ correction
+  in $\Phi_{\rm DM}(z)$.  High-amplitude orbits become ``stiffer'' --- their
+  back-integration compresses them more --- so the distribution of $w(0)$ is
+  narrower.
+
+  \item[(b) A positive-curvature $V_{\rm nn}$.]
+  Adding a midplane mass concentration produces a quadratic correction
+  $V_{\rm nn}(z) \approx \tfrac{1}{2}\,\Delta\omega^2\, z^2$ near the midplane.
+  This raises the effective harmonic frequency at $z = 0$, which in turn
+  modifies the back-integration so that $w(0)$ is narrower.  A flexible NN
+  finds this very easily.
+\end{description}
+
+The MLE landscape is therefore \emph{not} point-like at any single minimum; it
+has a continuous ridge of nearly-degenerate solutions parametrised by
+trade-offs between (a) and (b).  The truth $(h_{\rm true}, 0)$ lies \emph{off}
+this ridge.  Adam picks a point on the ridge based on initialisation and
+learning rates, but it will not, in general, land at the truth.
+
+\section*{Step 3: Time-dependence cannot help --- it can only enlarge\\
+the degeneracy}
+
+A time-dependent correction $V_{\rm nn}(z, t)$ is a strict superset of
+$V_{\rm nn}(z)$:
+\begin{itemize}[leftmargin=2em]
+  \item Every static $V_{\rm nn}$ that absorbs the PDF bias is still available
+        as a $t$-constant member of the larger class.
+  \item Additional time-dependent modes --- for example, periodic stiffening of
+        the well at orbital frequencies --- can produce \emph{additional}
+        mechanisms that narrow the back-integrated $w(0)$ distribution.
+\end{itemize}
+
+The dimension of the degenerate ridge grows.  Time-dependence \emph{cannot
+remove} any direction; it can only add more low-NLL configurations to choose
+from.  A time-dependent NN therefore cannot do better than the static NN --- it
+can only do equally badly or worse.
+
+\section*{Step 4: Physical constraints (e.g.\ $\rho_{\rm nn} \ge 0$ via Poisson)\\
+do not remove the relevant ridge}
+
+A natural physical restriction is to require that the NN's potential
+correspond to a non-negative mass distribution:
+\begin{equation}
+  \frac{\partial^2 V_{\rm nn}}{\partial z^2} \;=\; 4\pi G\,\rho_{\rm nn}(z) \;\ge\; 0.
+\end{equation}
+This forces $V_{\rm nn}$ to be everywhere convex.  It successfully blocks one
+direction of bias-absorption --- concave corrections like $-z^4/h^2$ that would
+mimic $h$-decreases by reshaping the anharmonic structure of the potential.
+
+But it does \emph{not} block mechanism (b).  A constant positive density near
+midplane gives a quadratic $V_{\rm nn}(z) \approx \mathrm{const}\cdot z^2$,
+which is convex --- fully allowed under $\rho_{\rm nn} \ge 0$.  This is exactly
+the midplane-mass-concentration that narrows $w(0)$.  The bias-absorbing
+direction therefore \emph{survives} the positivity constraint.  The ridge
+persists.
+
+Any constraint we can write down on the dynamics-side model can only carve
+along the loss surface.  It cannot move the surface itself to a place where
+$(h_{\rm true}, 0)$ is the optimum, because that is not what the constraint
+does.
+
+\section*{Step 5: The bias is in the loss function, not the model}
+
+The structural obstruction is this.  The loss
+\begin{equation}
+  \mathrm{NLL}(h, V_{\rm nn}) \;\sim\; \sum_i \frac{w_i(0;\,h, V_{\rm nn})^2}{\sigma_{w,\rm fit}^2} + \cdots
+\end{equation}
+has $\sigma_{w,\rm fit}$ \textbf{frozen at the wrong value}.  The minimum of
+any such loss over any model class --- potential corrections, time-dependent
+corrections, physics-informed corrections, neural-network corrections, all of
+them --- sits at the model point that produces
+$\langle w(0)^2\rangle \approx \sigma_{w,\rm fit}^2$.  By assumption that is
+not the truth, because the truth produces
+$\langle w(0)^2\rangle \approx \sigma_{w,\rm true}^2 > \sigma_{w,\rm fit}^2$.
+
+\begin{quote}
+\emph{No flexibility on the model side can change where the loss function's
+minimum sits, because the loss function is defined by the wrong
+$\sigma_{w,\rm fit}$.}
+\end{quote}
+
+A NN potential correction is a tool for redistributing flexibility
+\emph{within} the dynamics.  The bias does not live in the dynamics; it lives
+in the loss function, via the assumed initial distribution.  The tool is
+pointed at the wrong target.
+
+\section*{Corollary: What \emph{can} recover $h_{\rm true}$}
+
+Only two strategies can succeed.
+
+\subsection*{(1) Change the loss function}
+
+Make $\sigma_{w,\rm fit}$ (and $\sigma_{z,\rm fit}$) \textbf{free parameters}
+of the fit.  The joint MLE then minimises over
+$(h, \sigma_{z,\rm fit}, \sigma_{w,\rm fit}, \ldots)$, and the joint minimum
+is at $(h_{\rm true}, \sigma_{z,\rm true}, \sigma_{w,\rm true}, \ldots)$.  This
+is the structurally correct fix: the bias was that the loss had a wrong frozen
+constant; allowing that constant to float removes the bias at its source.
+
+\subsection*{(2) Add information beyond the per-star NLL}
+
+Cross-validation against held-out stars, multiple datasets at different
+$t_{\rm obs}$, an external prior on $h$, observed spatial structure of
+$\sigma_w(z)$, etc.  Each of these adds a constraint that the wrong-$\sigma_w$
+bias cannot satisfy simultaneously, because the bias produces different
+signatures at different datasets or scales.
+
+\subsection*{Where a NN can usefully live}
+
+A NN solution to the PDF-mismatch problem is to put NN flexibility where the
+bias actually lives --- in the initial PDF itself.  Replace the rigid Gaussian
+$f_0(z, w)$ with a NN-parametrised density (e.g.\ a normalising flow over
+$(z, w)$, or its parametric special case: a Gaussian whose parameters are
+learnable, or a Gaussian mixture).  The likelihood becomes
+\begin{equation}
+  \mathrm{NLL} \;=\; -\sum_i \log f_{0,\rm NN}\bigl(z_i(0), w_i(0)\bigr).
+\end{equation}
+This NN can absorb the PDF mismatch but \emph{cannot shift orbits}, so it has
+no leverage on $h$ other than the structural information in the
+back-integration.  The joint MLE then recovers $h \approx h_{\rm true}$
+together with the correct $f_0$.
+
+\section*{One-sentence summary}
+
+A NN potential correction adds knobs to the \emph{dynamics}, but the bias from
+a wrong initial PDF lives in the \emph{loss function} --- so the dynamics-side
+knobs can never reach the truth, while a NN that parametrises the initial PDF
+itself can.
+
+\end{document}

@@ -1,0 +1,383 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language american
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Astrophysics - Phase Space Measurements and DM Models
+\end_layout
+
+\begin_layout Section*
+Weighing the Galactic disk using phase-space spirals II.
+ Most stringent constraints on a thin dark disk using Gaia EDR3 - https://arxiv.org/pdf/2105.14030
+\end_layout
+
+\begin_layout Subsection*
+Rederiving the paper
+\end_layout
+
+\begin_layout Standard
+In the paper equation (6) is the gravitational potential that governs the system and has in it signal parameters:
+\begin_inset Formula 
+\[
+\Phi(z|\rho_{h})=\sum_{h=1}^{4}\frac{4\pi G\rho_{h}}{\left(2^{h-1}\times100\text{pc}\right)^{2}}\log\left[\cosh\left(\frac{z}{2^{h-1}\times100\text{pc}}\right)\right].
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This form is not accidental but has a logic behind it.
+\end_layout
+
+\begin_layout Standard
+Starting from the Boltzman equation:
+\begin_inset Formula 
+\begin{align*}
+\frac{df}{dt} & =C\left[f\right]\\
+\frac{\partial f}{\partial t}+\vec{v}\frac{\partial f}{\partial\vec{x}} & -\frac{\partial\Phi}{\partial\vec{x}}\frac{\partial f}{\partial\vec{v}}=0.
+\end{align*}
+
+\end_inset
+
+looking only at the 
+\begin_inset Formula $Z$
+\end_inset
+
+ direction and assuming steady state:
+\begin_inset Formula 
+\[
+v_{z}\frac{\partial f}{\partial z}-\frac{\partial\Phi}{\partial z}\frac{\partial f}{\partial v_{z}}=0.
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The connection between the phase space and the matter density could be expressed as 
+\begin_inset Formula $\rho=\int dv^{3}f$
+\end_inset
+
+,
+ and the mean vertical velocity is 
+\begin_inset Formula $\bar{v_{z}}=\frac{\int v_{z}fd^{3}v}{\rho}$
+\end_inset
+
+,
+ and 
+\begin_inset Formula $\bar{v_{z}}^{2}=\frac{\int v_{z}^{2}fd^{3}v}{\rho}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to get the the density also in the same equation we integrate by the velocity:
+\begin_inset Formula 
+\begin{align*}
+\int v_{z}d^{3}v\left[v_{z}\frac{\partial f}{\partial z}-\frac{\partial\Phi}{\partial z}\frac{\partial f}{\partial v_{z}}\right]=0.\\
+\frac{∂}{∂z}\underbrace{\int v_{z}^{2}fd^{3}v}_{\rho\bar{v_{z}^{2}}}-\underbrace{\int\cancel{v_{z}}d^{3}v\frac{\partial\Phi}{\partial z}\cancel{\frac{∂}{∂v_{z}}}f}_{integration-by-parts}=0\\
+\frac{∂}{∂z}\underbrace{\int v_{z}^{2}fd^{3}v}_{\rho\bar{v_{z}^{2}}}+\frac{\partial\Phi}{\partial z}\rho=0\\
+\bar{v_{z}^{2}}\frac{∂}{∂z}\rho=-\rho\frac{∂\Phi}{∂z}\\
+\frac{1}{\rho}∂\rho=-\frac{1}{\bar{v_{z}^{2}}}∂\Phi
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This can give the following solution for 
+\begin_inset Formula $\rho$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\rho=\rho_{0}\exp\left[-\frac{\Phi}{\bar{v_{z}^{2}}}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Adding to this equation the Poisson equation in the 
+\begin_inset Formula $z$
+\end_inset
+
+ direction:
+\begin_inset Formula 
+\[
+\frac{∂^{2}\Phi}{∂z^{2}}=4\pi G\rho_{0}\exp\left[-\frac{\Phi}{\bar{v_{z}^{2}}}\right]
+\]
+
+\end_inset
+
+ we define 
+\begin_inset Formula $\psi=\Phi/\bar{v_{z}^{2}}$
+\end_inset
+
+,
+ and multilply by 
+\begin_inset Formula $\psi^{'}$
+\end_inset
+
+ so the left hand side is:
+\begin_inset Formula 
+\[
+LHS=\psi^{''}\psi^{'}=\frac{1}{2}\frac{∂}{∂z}\left[\left(\psi^{'}\right)^{2}\right]
+\]
+
+\end_inset
+
+This yields:
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{2}\left[\left(\psi^{'}\right)^{2}\right] & =\int\underbrace{\frac{4\pi G\rho_{0}}{\bar{v}_{z}^{2}}}_{A}\exp\left[-\psi(z)\right]dz\\
+ & =-A\exp\left[-\psi\right]+C
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming symmetry in the vertical dimension :
+ 
+\begin_inset Formula $\psi(0)=0,\psi^{'}(0)=0,$
+\end_inset
+
+ gives 
+\begin_inset Formula $C=A$
+\end_inset
+
+,
+ and therefore:
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{2}\frac{∂\psi}{∂z} & =A\sqrt{1-e^{-\psi}}\\
+\frac{∂\psi}{\sqrt{1-e^{-\psi}}} & =2A∂z
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To solve this integral we define the variable 
+\begin_inset Formula $s=\sqrt{1-e^{-\psi}}\rightarrow ds=\frac{e^{-\psi}}{2\sqrt{1-e^{-\psi}}}d\psi$
+\end_inset
+
+ ,
+ and we have 
+\begin_inset Formula $e^{-\psi}=1-s^{2}$
+\end_inset
+
+,
+ so we get:
+\begin_inset Formula 
+\begin{align*}
+2\int\frac{ds}{1-s^{2}} & =2Az+C\\
+\text{arctanh}(s) & =Az+C\\
+\text{arctanh}\left(\sqrt{1-e^{-\psi}}\right) & =Az+C\\
+1-e^{-\psi} & =\text{tanh}^{2}(Az)\\
+e^{-\psi}=1-\text{tanh}^{2}(Az) & =\frac{1}{\cosh^{2}(Az)}\\
+\psi & \approx\ln\left(\cosh^{2}(Az)\right)\\
+ & =2\ln\left(\cosh(Az)\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Eliptic VS Circle in Phase Space
+\end_layout
+
+\begin_layout Standard
+When we consider the energy (and assume it is constant):
+\begin_inset Formula 
+\[
+E=\Phi+\frac{w^{2}}{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Tasks
+\end_layout
+
+\begin_layout Standard
+1.
+ Understand analytically what is the scale that dictates the ratio between the space and velocity 
+\end_layout
+
+\begin_layout Standard
+2.
+ Change 
+\end_layout
+
+\begin_layout Standard
+Primordial Black Holes
+\end_layout
+
+\begin_layout Section*
+Back of the envelope calculation
+\end_layout
+
+\begin_layout Standard
+First we define the fraction of dark matter of the PBH as 
+\begin_inset Formula $f_{pbh}$
+\end_inset
+
+,
+ and get the number density of PBHs:
+\begin_inset Formula 
+\[
+n=\frac{f_{pbh}\rho_{dm}}{M}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\rho_{DM}$
+\end_inset
+
+ is the dark matter density and 
+\begin_inset Formula $M$
+\end_inset
+
+ is the mass of the black hole.
+ 
+\end_layout
+
+\begin_layout Standard
+then the distance between black holes should be :
+ 
+\begin_inset Formula 
+\[
+d\sim n^{-1/3}=\left(\frac{M}{f_{pbh}\rho_{dm}}\right)
+\]
+
+\end_inset
+
+ Adopting the value for 
+\begin_inset Formula $\rho_{dm}\approx0.0083M_{\odot}/\text{pc}^{3}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+d\approx4.94\left(\frac{M}{M_{\odot}}\right)^{1/3}f_{pbh}^{-1/3}\left(\frac{\rho_{dm}}{0.0083M_{\odot}/\text{pc}^{3}}\right)^{-1/3}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
