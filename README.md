@@ -1,8 +1,12 @@
-# Astrophysical Phase Space — h_DM from vertical (z, w) phase-space
+# Astrophysical Phase Space Dynamics
 
-Inference of the dark-matter scale height `h_dm` (and the total flow time Δt) from
-vertical phase-space data: data → normalizing-flow model of f₀ → differentiable
-Hamiltonian back-integration → likelihood.
+Measuring two things from the Milky Way's vertical phase space (z, w):
+
+- the **scale height of the dark-matter halo**, `h_dm`, and
+- the **dynamical time of the phase-space spiral**, Δt (the time since the disk was perturbed).
+
+Pipeline: data → normalizing-flow model of the initial distribution f₀ →
+differentiable Hamiltonian back-integration → joint maximum likelihood in (h_dm, Δt).
 
 ## Layout
 
